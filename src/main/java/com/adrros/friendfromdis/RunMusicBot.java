@@ -1,5 +1,6 @@
 package com.adrros.friendfromdis;
 
+import com.adrros.friendfromdis.command.music.add.AddMusicCommand;
 import com.adrros.friendfromdis.command.music.play.PlayCommand;
 import com.adrros.friendfromdis.command.music.play.buttions.PlayDropDownListener;
 import jakarta.annotation.PostConstruct;
@@ -39,7 +40,11 @@ public class RunMusicBot {
 	}
 	
 	private void registerListeners() {
-		List<ListenerAdapter> listeners = List.of(new PlayCommand(), new PlayDropDownListener());
+		List<ListenerAdapter> listeners = List.of(
+				new PlayCommand(),
+				new PlayDropDownListener(),
+				new AddMusicCommand()
+		);
 		listeners.forEach((listener) -> builder.addEventListeners(new Object[]{listener}));
 	}
 	

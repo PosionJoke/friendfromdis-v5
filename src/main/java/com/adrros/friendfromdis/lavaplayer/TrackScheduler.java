@@ -1,6 +1,6 @@
-package com.adrros.friendfromdis.command.music.lavaplayer;
+package com.adrros.friendfromdis.lavaplayer;
 
-import com.adrros.friendfromdis.command.music.lavaplayer.player_state.PlayerState;
+import com.adrros.friendfromdis.lavaplayer.player_state.PlayerState;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;

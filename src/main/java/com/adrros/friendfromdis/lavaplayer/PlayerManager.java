@@ -1,4 +1,4 @@
-package com.adrros.friendfromdis.command.music.lavaplayer;
+package com.adrros.friendfromdis.lavaplayer;
 
 import com.adrros.friendfromdis.command.music.play.buttions.PlayDropDown;
 import com.adrros.friendfromdis.command.music.play.buttions.SongsToPlayStore;

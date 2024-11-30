@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package com.adrros.friendfromdis.command.music.lavaplayer.player_state;
+package com.adrros.friendfromdis.lavaplayer.player_state;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;

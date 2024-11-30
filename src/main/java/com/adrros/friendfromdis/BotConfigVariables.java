@@ -4,9 +4,7 @@ package com.adrros.friendfromdis;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class BotConfigVariables {
