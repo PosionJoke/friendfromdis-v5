@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +28,8 @@ import static com.adrros.friendfromdis.util.ValidateEnterToCommand.isCommandInva
 
 public class PlayCommand extends ListenerAdapter {
 	
-	public void onMessageReceived(final MessageReceivedEvent eventRaw) {
+	@Override
+	public void onMessageReceived(@NotNull final MessageReceivedEvent eventRaw) {
 		if (isCommandInvalid(eventRaw, Commands.PLAY))
 			return;
 		
