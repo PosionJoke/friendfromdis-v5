@@ -3,8 +3,11 @@ package com.adrros.friendfromdis;
 import com.adrros.friendfromdis.command.music.add.AddMusicCommand;
 import com.adrros.friendfromdis.command.music.play.PlayCommand;
 import com.adrros.friendfromdis.command.music.play.buttions.PlayDropDownListener;
+import com.adrros.friendfromdis.domain.AddSoundService;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -15,18 +18,17 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RunMusicBot {
 	public static JDABuilder builder;
 	public static JDA jda;
+	
 	private final BotConfigVariables botConfigVariables;
+	private final AddSoundService addSoundService;
 	
 	@PostConstruct
 	public void init() {
 		this.setUp();
-	}
-	
-	public RunMusicBot(BotConfigVariables botConfigVariables) {
-		this.botConfigVariables = botConfigVariables;
 	}
 	
 	public void setUp() {
@@ -43,7 +45,7 @@ public class RunMusicBot {
 		List<ListenerAdapter> listeners = List.of(
 				new PlayCommand(),
 				new PlayDropDownListener(),
-				new AddMusicCommand()
+				new AddMusicCommand(addSoundService)
 		);
 		listeners.forEach((listener) -> builder.addEventListeners(new Object[]{listener}));
 	}
