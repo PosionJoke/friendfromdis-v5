@@ -5,10 +5,7 @@ import com.adrros.friendfromdis.command.music.play.PlayCommand;
 import com.adrros.friendfromdis.command.music.play.buttions.PlayDropDownListener;
 import com.adrros.friendfromdis.domain.AddSoundService;
 import jakarta.annotation.PostConstruct;
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -17,11 +14,12 @@ import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RunMusicBot {
-	public JDABuilder builder;
-	public JDA jda;
+	private JDABuilder builder;
 	
 	private final BotConfigVariables botConfigVariables;
 	private final AddSoundService addSoundService;
@@ -38,7 +36,7 @@ public class RunMusicBot {
 		builder.setActivity(Activity.playing("Baron i zamykamy midem"));
 		basicConfig();
 		this.registerListeners();
-		jda = builder.build();
+		builder.build();
 	}
 	
 	private void registerListeners() {
@@ -47,7 +45,7 @@ public class RunMusicBot {
 				new PlayDropDownListener(),
 				new AddMusicCommand(addSoundService)
 		);
-		listeners.forEach((listener) -> builder.addEventListeners(new Object[]{listener}));
+		listeners.forEach((ListenerAdapter listener) -> builder.addEventListeners(listener));
 	}
 	
 	private void basicConfig() {
