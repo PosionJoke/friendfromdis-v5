@@ -20,22 +20,22 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RunMusicBot {
-	public static JDABuilder builder;
-	public static JDA jda;
+	public JDABuilder builder;
+	public JDA jda;
 	
 	private final BotConfigVariables botConfigVariables;
 	private final AddSoundService addSoundService;
 	
 	@PostConstruct
 	public void init() {
-		this.setUp();
+		this.createJda();
 	}
 	
-	public void setUp() {
+	public void createJda() {
 		builder = JDABuilder.createDefault(this.botConfigVariables.getBotKey());
 		builder.setBulkDeleteSplittingEnabled(false);
 		builder.setCompression(Compression.NONE);
-		builder.setActivity(Activity.playing("TODO"));
+		builder.setActivity(Activity.playing("Baron i zamykamy midem"));
 		basicConfig();
 		this.registerListeners();
 		jda = builder.build();
@@ -50,32 +50,32 @@ public class RunMusicBot {
 		listeners.forEach((listener) -> builder.addEventListeners(new Object[]{listener}));
 	}
 	
-	private static void basicConfig() {
-		builder.disableCache(CacheFlag.MEMBER_OVERRIDES, new CacheFlag[0]);
-		builder.disableCache(CacheFlag.ACTIVITY, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.VOICE_STATE, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.EMOJI, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.STICKER, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.CLIENT_STATUS, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.MEMBER_OVERRIDES, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.ROLE_TAGS, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.FORUM_TAGS, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.ONLINE_STATUS, new CacheFlag[0]);
-		builder.enableCache(CacheFlag.SCHEDULED_EVENTS, new CacheFlag[0]);
-		builder.enableIntents(GatewayIntent.GUILD_MEMBERS, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_MODERATION, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_WEBHOOKS, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_INVITES, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_VOICE_STATES, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_PRESENCES, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_MESSAGES, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.DIRECT_MESSAGES, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.DIRECT_MESSAGE_TYPING, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.MESSAGE_CONTENT, new GatewayIntent[0]);
-		builder.enableIntents(GatewayIntent.SCHEDULED_EVENTS, new GatewayIntent[0]);
+	private void basicConfig() {
+		builder.disableCache(CacheFlag.MEMBER_OVERRIDES);
+		builder.disableCache(CacheFlag.ACTIVITY);
+		builder.enableCache(CacheFlag.VOICE_STATE);
+		builder.enableCache(CacheFlag.EMOJI);
+		builder.enableCache(CacheFlag.STICKER);
+		builder.enableCache(CacheFlag.CLIENT_STATUS);
+		builder.enableCache(CacheFlag.MEMBER_OVERRIDES);
+		builder.enableCache(CacheFlag.ROLE_TAGS);
+		builder.enableCache(CacheFlag.FORUM_TAGS);
+		builder.enableCache(CacheFlag.ONLINE_STATUS);
+		builder.enableCache(CacheFlag.SCHEDULED_EVENTS);
+		builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
+		builder.enableIntents(GatewayIntent.GUILD_MODERATION);
+		builder.enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS);
+		builder.enableIntents(GatewayIntent.GUILD_WEBHOOKS);
+		builder.enableIntents(GatewayIntent.GUILD_INVITES);
+		builder.enableIntents(GatewayIntent.GUILD_VOICE_STATES);
+		builder.enableIntents(GatewayIntent.GUILD_PRESENCES);
+		builder.enableIntents(GatewayIntent.GUILD_MESSAGES);
+		builder.enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS);
+		builder.enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING);
+		builder.enableIntents(GatewayIntent.DIRECT_MESSAGES);
+		builder.enableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS);
+		builder.enableIntents(GatewayIntent.DIRECT_MESSAGE_TYPING);
+		builder.enableIntents(GatewayIntent.MESSAGE_CONTENT);
+		builder.enableIntents(GatewayIntent.SCHEDULED_EVENTS);
 	}
 }

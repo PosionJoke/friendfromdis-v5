@@ -1,6 +1,8 @@
 package com.adrros.friendfromdis;
 
 
+import com.adrros.friendfromdis.util.IsCorrectPrefix;
+import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
@@ -8,42 +10,34 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class BotConfigVariables {
-	public static String botVersion;
-	public static List<String> prodPrefixes = List.of("'", "!", "`", ";");
-	public static List<String> devPrefixes = List.of("[");
-	public static boolean isProd;
-	private static String prodKey;
-	private static String devKey;
+	private final List<String> prodPrefixes = List.of("|");
+	private final List<String> devPrefixes = List.of("[");
+	private boolean isProd;
+	private String devKey;
+	private String botKey;
 	
-	public BotConfigVariables() {
+	@PostConstruct
+	public void init() {
+		IsCorrectPrefix.setPrefixes(isProd ? prodPrefixes : devPrefixes);
 	}
 	
 	@Value("${discrod.bot.isProd}")
-	public void setNameStatic(boolean isProd) {
-		BotConfigVariables.isProd = isProd;
+	public void loadIsProdFromConfig(boolean isProd) {
+		this.isProd = isProd;
 	}
 	
 	@Value("${discrod.bot.prod.key}")
-	public void setBotProdKey(String key) {
-		prodKey = key;
+	public void loadBotKeyFromConfig(String key) {
+		botKey = key;
 	}
 	
 	@Value("${discrod.bot.dev.key}")
-	public void setBotDevKey(String key) {
+	public void loadDevKeyFromConfig(String key) {
 		devKey = key;
 	}
 	
-	@Value("${discrod.bot.version}")
-	public void setBotVersion(String version) {
-		botVersion = version;
-	}
-	
-	public static List<String> getPrefixes() {
-		return isProd ? List.of("|") : List.of("=");
-	}
-	
 	public String getBotKey() {
-		return isProd ? prodKey : devKey;
+		return isProd ? botKey : devKey;
 	}
 }
 

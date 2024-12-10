@@ -1,18 +1,26 @@
 package com.adrros.friendfromdis.util;
 
-import com.adrros.friendfromdis.BotConfigVariables;
 import lombok.experimental.UtilityClass;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 @UtilityClass
 public class IsCorrectPrefix {
 	
+	private static List<String> prefixes = new ArrayList<>();
+	
 	public static boolean isPrefixCorrect(String rawMessage) {
-		Stream<String> var10000 = BotConfigVariables.getPrefixes().stream();
 		Objects.requireNonNull(rawMessage);
-		return var10000.anyMatch(rawMessage::startsWith);
+		if (prefixes.isEmpty())
+			throw new IllegalStateException("Prefixes are not set yet!");
+		
+		return prefixes.stream().anyMatch(rawMessage::startsWith);
+	}
+	
+	public static void setPrefixes(List<String> prefixes) {
+		IsCorrectPrefix.prefixes = prefixes;
 	}
 	
 }
