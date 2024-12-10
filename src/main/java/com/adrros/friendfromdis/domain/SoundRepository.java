@@ -31,6 +31,12 @@ public interface SoundRepository extends CrudRepository<Sound, Long> {
 	@Query(value = "select id, sound_key, sound_name, played_to_day from sound where id in (:ids)")
 	List<Sound> findAllByIdInWithoutData(@Param("ids") List<Long> ids);
 	
+	@Query(value = "select sound_name from mb_sound where LOWER(sound_name) like LOWER(:songName)")
+	List<String> findAllWhereSongNameLike(@Param("songName") String songName);
+	
+	@Query(value = "select id, sound_name, sound_data, added_by from mb_sound where sound_name = :songName")
+	Sound getByName(@Param("songName") String songName);
+	
 	@Query(value = "select id, sound_key, sound_name, played_to_day from sound where sound.sound_name = :soundName")
 	Optional<Sound> findBySoundNameWithoutData(@Param("soundName") String soundName);
 	

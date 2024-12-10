@@ -43,7 +43,7 @@ public class RunMusicBot {
 	
 	private void registerListeners() {
 		List<ListenerAdapter> listeners = List.of(
-				new PlayCommand(),
+				new PlayCommand(addSoundService),
 				new PlayDropDownListener(),
 				new AddMusicCommand(addSoundService)
 		);

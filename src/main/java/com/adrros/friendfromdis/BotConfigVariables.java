@@ -39,7 +39,7 @@ public class BotConfigVariables {
 	}
 	
 	public static List<String> getPrefixes() {
-		return isProd ? List.of("'", "!", "`", ";") : List.of("=");
+		return isProd ? List.of("|") : List.of("=");
 	}
 	
 	public String getBotKey() {

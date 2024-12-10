@@ -1,7 +1,10 @@
 package com.adrros.friendfromdis.lavaplayer;
 
+import com.adrros.friendfromdis.command.music.play.SavedSong;
 import com.adrros.friendfromdis.command.music.play.buttions.PlayDropDown;
 import com.adrros.friendfromdis.command.music.play.buttions.SongsToPlayStore;
+import com.adrros.friendfromdis.domain.AddSoundService;
+import com.adrros.friendfromdis.domain.Sound;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -9,10 +12,18 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -20,6 +31,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PlayerManager {
+//    public static final String PATH_TO_LOCAL_MP3 = "../";
+//    public static final String PATH_TO_LOCAL_MP3 = "src/main/resources/";
+//    public static final String PATH_TO_LOCAL_MP3 = "src\\main\\resources\\";
+    public static final String PATH_TO_LOCAL_MP3 = "\\";
+    
     private static final Logger log = LogManager.getLogger(PlayerManager.class);
     private static final Map<Long, GuildMusicManager> musicManagers = new HashMap();
     private static final AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
@@ -55,14 +71,14 @@ public class PlayerManager {
     }
 
     public static void loadAndPlay(TextChannel channel, String trackUrlOrName, boolean silent, GuildMusicManager musicManager) {
-        doLoadAndPlay(channel, trackUrlOrName, silent, musicManager);
+//        doLoadAndPlay(channel, trackUrlOrName, silent, musicManager);
     }
 
-    public static void loadAndPlay(TextChannel channel, String trackUrlOrName, boolean silent) {
-        doLoadAndPlay(channel, trackUrlOrName, silent, getMusicManager(channel.getGuild()));
+    public static void loadAndPlay(TextChannel channel, String trackUrlOrName, List<String> additionalSongNames, AddSoundService addSoundService, boolean silent) {
+        doLoadAndPlay(channel, trackUrlOrName, silent, getMusicManager(channel.getGuild()), additionalSongNames, addSoundService);
     }
 
-    private static void doLoadAndPlay(final TextChannel channel, String trackUrlOrName, final boolean silent, final GuildMusicManager musicManager) {
+    private static void doLoadAndPlay(final TextChannel channel, String trackUrlOrName, final boolean silent, final GuildMusicManager musicManager, List<String> additionalSongNames, AddSoundService addSoundService) {
         if (isFirstRun || timeToRestart) {
             log.info("isFirst run: " + isFirstRun + " or timeToRestart: " + timeToRestart);
             log.info(audioPlayerManager);
@@ -76,6 +92,7 @@ public class PlayerManager {
         log.info("1 founded music manager from THE MAP: " + String.valueOf(musicManagers));
         musicManagers.entrySet().stream().forEach((entry) -> log.info("entry in the map: " + String.valueOf(entry.getKey())));
         audioPlayerManager.loadItemOrdered(musicManager, trackUrlOrName, new AudioLoadResultHandler() {
+            // * triggered when doLoadAndPlay() has trackUrlOrName as a <tittle>.mp3
             public void trackLoaded(AudioTrack track) {
                 PlayerManager.log.info("start trackLoaded, track: [%s]".formatted(track));
                 PlayerManager.log.info("2 founded music manager from THE MAP: " + String.valueOf(PlayerManager.musicManagers));
@@ -85,17 +102,34 @@ public class PlayerManager {
                 }
 
             }
-
+            // * triggered when doLoadAndPlay() has trackUrlOrName as a restResource:<tittle>
             public void playlistLoaded(AudioPlaylist playlist) {
-                Consumer<String> consumer = (empty) -> {
+                List<String> songTitles = new ArrayList<>();
+                songTitles.addAll(additionalSongNames);
+                songTitles.addAll(playlist.getTracks().stream().map((track) -> track.getInfo().title).toList());
+                
+                BiConsumer<String, Boolean> consumer = (songName, playFromDataBase) -> {
+                    // * if user selected song which is saved in the DB
+                    if (playFromDataBase) {
+                        // remove prefix
+                        final String fileName = songName.replaceAll(SavedSong.SAVED_SONG.getName(), "");
+                        // create local file
+                        final Sound byName = addSoundService.getByName(fileName);
+                        createLocalFile(byName);
+                        doLoadAndPlay(channel, PATH_TO_LOCAL_MP3 + fileName, silent, getMusicManager(channel.getGuild()), additionalSongNames, addSoundService);
+                        return;
+                    }
                     PlayerManager.log.info("Adding to queue");
+                    
                     List<AudioTrack> tracks = playlist.getTracks();
-                    AudioTrack first = (AudioTrack)tracks.stream().filter((audioTrack) -> audioTrack.getInfo().title.equals(empty)).findFirst().orElseThrow();
-                    channel.sendMessage("Adding to queue: `" + first.getInfo().title);
+                    AudioTrack first = tracks.stream().filter((audioTrack) -> audioTrack.getInfo().title.equals(songName)).findFirst().orElseThrow();
+                    
+                    channel.sendMessage("Adding to queue: `" + first.getInfo().title).queue();
                     musicManager.scheduler.addToQueue(first);
                 };
+
                 SongsToPlayStore.addSong(channel.getId(), consumer);
-                (new PlayDropDown()).createDropDown(channel, playlist.getTracks().stream().map((track) -> track.getInfo().title).toList());
+                new PlayDropDown().createAndRunDropDown(channel, songTitles);
             }
 
             public void noMatches() {
@@ -107,7 +141,25 @@ public class PlayerManager {
             }
         });
     }
-
+    
+    private static void createLocalFile(Sound sound) {
+//        try {
+//            FileUtils.writeByteArrayToFile(new File(nextSound.getSoundName() + ".mp3"), nextSound.getSoundData());
+//        } catch (IOException e) {
+//            log.error("RadioPlayer.playNextSong fail during FileUtils.writeByteArrayToFile");
+//            throw new RuntimeException(e);
+//        }
+        
+        InputStream inputStream = new ByteArrayInputStream(sound.getSoundData());
+        try {
+					File file = new File(PATH_TO_LOCAL_MP3 + sound.getSoundName());
+					Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            log.error("RadioPlayer.playNextSong fail during FileUtils.writeByteArrayToFile");
+            throw new RuntimeException(e);
+        }
+    }
+    
     public static void setTimeToRestart(boolean timeToRestart) {
         PlayerManager.timeToRestart = timeToRestart;
     }

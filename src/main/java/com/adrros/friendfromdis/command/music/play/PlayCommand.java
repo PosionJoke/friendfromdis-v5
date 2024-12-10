@@ -7,10 +7,13 @@ package com.adrros.friendfromdis.command.music.play;
 
 
 import com.adrros.friendfromdis.Commands;
+import com.adrros.friendfromdis.domain.AddSoundService;
+import com.adrros.friendfromdis.domain.Sound;
 import com.adrros.friendfromdis.lavaplayer.PlayerManager;
 import com.adrros.friendfromdis.lavaplayer.player_state.PlayerState;
 import com.adrros.friendfromdis.util.BotState;
 import com.adrros.friendfromdis.util.MessageFormatter;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
@@ -21,13 +24,18 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.adrros.friendfromdis.command.music.MusicSource.SOUND_CLAUD;
 import static com.adrros.friendfromdis.util.ValidateEnterToCommand.isCommandInvalid;
 
+@RequiredArgsConstructor
 public class PlayCommand extends ListenerAdapter {
 	
+	private final AddSoundService addSoundService;
+
 	@Override
 	public void onMessageReceived(@NotNull final MessageReceivedEvent eventRaw) {
 		if (isCommandInvalid(eventRaw, Commands.PLAY))
@@ -35,8 +43,21 @@ public class PlayCommand extends ListenerAdapter {
 		
 		MessageChannelUnion channel = eventRaw.getChannel();
 		joinToChannelIfNeeded(eventRaw, channel);
-		channel.sendMessage("I'm alive!").queue();
-		this.runPlayCommand(eventRaw.getMessage().getContentRaw(), eventRaw.getMember(), eventRaw.getChannel(), eventRaw.getAuthor().getAvatarUrl(), true);
+		
+		List<String> additionalSongNames = new ArrayList<>();
+		// get titles
+		// paste titles to dropdown
+		String songName = getLinkOrSongName(eventRaw.getMessage().getContentRaw());
+		// find similar names from DB and append them to list
+//		List<String> songNamesFromDB = new ArrayList<>();
+//		List<String> songNamesFromDB = List.of(SavedSong.SAVED_SONG.getName() + "aaa1.mp3");
+		final String pureSongName = getPureSongName(eventRaw.getMessage().getContentRaw());
+		List<String> songNamesFromDB = addSoundService.getSimilarSongNames(pureSongName);
+		songNamesFromDB.stream()
+				.map(s -> SavedSong.SAVED_SONG.getName() + s)
+				.forEach(additionalSongNames::add);
+//		additionalSongNames.addAll(songNamesFromDB);
+		this.runPlayCommand(eventRaw.getMessage().getContentRaw(), eventRaw.getMember(), eventRaw.getChannel(), eventRaw.getAuthor().getAvatarUrl(), true, additionalSongNames, addSoundService);
 	}
 	
 	private static void joinToChannelIfNeeded(MessageReceivedEvent eventRaw, MessageChannelUnion channel) {
@@ -59,9 +80,9 @@ public class PlayCommand extends ListenerAdapter {
 		
 	}
 	
-	private void runPlayCommand(String contentRaw, Member member, MessageChannelUnion channel, String avatarUrl, boolean b) {
+	private void runPlayCommand(String contentRaw, Member member, MessageChannelUnion channel, String avatarUrl, boolean b, List<String> additionalSongNames, AddSoundService addSoundService) {
 		PlayerState.setTextChannel(channel.asTextChannel());
-		PlayerManager.loadAndPlay(channel.asTextChannel(), getLinkOrSongName(contentRaw), false);
+		PlayerManager.loadAndPlay(channel.asTextChannel(), getLinkOrSongName(contentRaw), additionalSongNames, addSoundService, false);
 	}
 	
 	private static String getLinkOrSongName(final String rawMessage) {
@@ -74,13 +95,32 @@ public class PlayCommand extends ListenerAdapter {
 		
 		String link = allWordsToFind.toString().replace("=", "").replace("play", "");
 		if (!isUrl(link)) {
-			link = "scsearch:" + link;
+			// * comment line below, now it should find mp3
+			link = SOUND_CLAUD.source + link;
 		}
-		
-		return link;
+//		link.replaceAll(" ", "");
+//		return link.replaceAll(" ", "");
+		return link.trim();
 	}
 	
 	private static boolean isUrl(String link) {
 		return (new UrlValidator()).isValid(link);
+	}
+	
+	private static String getPureSongName(final String rawMessage) {
+		List<String> prepareMessage = MessageFormatter.prepareMessage(rawMessage);
+		StringBuilder allWordsToFind = new StringBuilder();
+		
+		for (String word : prepareMessage) {
+			allWordsToFind.append(" ").append(word);
+		}
+		
+		String link = allWordsToFind.toString().replace("=", "").replace(Commands.PLAY.PREFIX, "");
+//		if (!isUrl(link)) {
+//			// * comment line below, now it should find mp3
+//			link = SOUND_CLAUD.source + link;
+//		}
+//		link.replaceAll(" ", "");
+		return link.trim();
 	}
 }

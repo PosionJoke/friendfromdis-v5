@@ -9,30 +9,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class SongsToPlayStore {
-    private static final Map<String, BlockingQueue<Consumer<String>>> songsToPlayMap = new HashMap();
+    private static final Map<String, BlockingQueue<BiConsumer<String, Boolean>>> songsToPlayMap = new HashMap();
 
     public SongsToPlayStore() {
     }
 
-    public static void addSong(String key, Consumer<String> songToPlay) {
+    public static void addSong(String key, BiConsumer<String, Boolean> songToPlay) {
         if (songsToPlayMap.containsKey(key)) {
             ((BlockingQueue)songsToPlayMap.get(key)).add(songToPlay);
         } else {
-            BlockingQueue<Consumer<String>> queue = new LinkedBlockingQueue();
+            BlockingQueue<BiConsumer<String, Boolean>> queue = new LinkedBlockingQueue();
             queue.add(songToPlay);
             songsToPlayMap.put(key, queue);
         }
 
     }
 
-    public static Consumer<String> get(String key) {
+    public static BiConsumer<String, Boolean> get(String key) {
         if (!songsToPlayMap.containsKey(key)) {
             throw new IllegalStateException("songsToPlayMap dosent contain any songs for this key: [%s]".formatted(key));
         } else {
-            return (Consumer)((BlockingQueue)songsToPlayMap.get(key)).poll();
+            return (BiConsumer)((BlockingQueue)songsToPlayMap.get(key)).poll();
         }
     }
 

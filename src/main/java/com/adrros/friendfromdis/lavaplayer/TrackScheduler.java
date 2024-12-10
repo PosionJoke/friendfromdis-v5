@@ -5,12 +5,19 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static com.adrros.friendfromdis.lavaplayer.PlayerManager.PATH_TO_LOCAL_MP3;
 
 public class TrackScheduler extends AudioEventAdapter {
     private static final Logger log = LogManager.getLogger(PlayerManager.class);
@@ -92,6 +99,17 @@ public class TrackScheduler extends AudioEventAdapter {
             PlayerState.setLoopTrack(track.makeClone());
             this.addToQueue(PlayerState.getLoopTrack());
         } else {
+            if (!track.getIdentifier().contains("https")) {
+                try {
+                    // Delete the file
+//                Path filePath = Paths.get(PATH_TO_LOCAL_MP3 + track.getInfo().title);
+                    Path filePath = Paths.get(track.getIdentifier());
+                    Files.delete(filePath);
+                    System.out.println("File deleted successfully.");
+                } catch (IOException e) {
+                    System.err.println("Failed to delete file: " + e.getMessage());
+                }
+            }
             this.nextTrack();
         }
     }
