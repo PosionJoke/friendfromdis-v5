@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  app:
+    image: 'friend_from_dis:latest'
+    ports:
+      - "9997:9997"
+    build:
+      context: src/main/docker
+    container_name: app
+    depends_on:
+      - db
+
+  db:
+    image: 'postgres:13.1-alpine'
+    ports:
+      - "5432:5432"
+    container_name: db
+    environment:
+      - POSTGRES_USER=adrros
+      - POSTGRES_PASSWORD=mudkip
