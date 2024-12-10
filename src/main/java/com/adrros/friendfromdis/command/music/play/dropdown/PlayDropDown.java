@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package com.adrros.friendfromdis.command.music.play.buttions;
+package com.adrros.friendfromdis.command.music.play.dropdown;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
