@@ -32,6 +32,10 @@ public class PlayerState {
     public static boolean isLoopOn() {
         return loopOn;
     }
+    
+    public static void changeIsLoopOn() {
+        loopOn = !loopOn;
+    }
 
     public static boolean isLoopPlayListOn() {
         return loopPlayListOn;

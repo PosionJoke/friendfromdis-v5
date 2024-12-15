@@ -1,6 +1,7 @@
 package com.adrros.friendfromdis;
 
 import com.adrros.friendfromdis.command.music.add.AddMusicCommand;
+import com.adrros.friendfromdis.command.music.loop.Loop;
 import com.adrros.friendfromdis.command.music.play.PlayCommand;
 import com.adrros.friendfromdis.command.music.play.PlayDropDownListener;
 import com.adrros.friendfromdis.domain.AddSoundService;
@@ -43,6 +44,7 @@ public class RunMusicBot {
 		List<ListenerAdapter> listeners = List.of(
 				new PlayCommand(addSoundService),
 				new PlayDropDownListener(),
+				new Loop(),
 				new AddMusicCommand(addSoundService)
 		);
 		listeners.forEach((ListenerAdapter listener) -> builder.addEventListeners(listener));

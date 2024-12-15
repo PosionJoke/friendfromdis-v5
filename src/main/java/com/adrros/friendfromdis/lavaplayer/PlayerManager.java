@@ -93,6 +93,7 @@ public class PlayerManager {
         musicManagers.entrySet().stream().forEach((entry) -> log.info("entry in the map: " + String.valueOf(entry.getKey())));
         audioPlayerManager.loadItemOrdered(musicManager, trackUrlOrName, new AudioLoadResultHandler() {
             // * triggered when doLoadAndPlay() has trackUrlOrName as a <tittle>.mp3
+            @Override
             public void trackLoaded(AudioTrack track) {
                 PlayerManager.log.info("start trackLoaded, track: [%s]".formatted(track));
                 PlayerManager.log.info("2 founded music manager from THE MAP: " + String.valueOf(PlayerManager.musicManagers));
@@ -103,6 +104,7 @@ public class PlayerManager {
 
             }
             // * triggered when doLoadAndPlay() has trackUrlOrName as a restResource:<tittle>
+            @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 List<String> songTitles = new ArrayList<>();
                 songTitles.addAll(additionalSongNames);
@@ -131,11 +133,11 @@ public class PlayerManager {
                 SongsToPlayStore.addSong(channel.getId(), consumer);
                 new PlayDropDown().createAndRunDropDown(channel, songTitles);
             }
-
+            @Override
             public void noMatches() {
                 System.out.println("noMatches ERROR (find me)");
             }
-
+            @Override
             public void loadFailed(FriendlyException exception) {
                 System.out.println("loadFailed ERROR (find me)");
             }
