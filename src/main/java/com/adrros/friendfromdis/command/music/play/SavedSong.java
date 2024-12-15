@@ -1,5 +1,8 @@
 package com.adrros.friendfromdis.command.music.play;
 
+import lombok.Getter;
+
+@Getter
 public enum SavedSong {
 	SAVED_SONG("🦚Saved: ");
 	
@@ -7,9 +10,5 @@ public enum SavedSong {
 	
 	SavedSong(String value) {
 		this.name = value;
-	}
-	
-	public String getName() {
-		return name;
 	}
 }
