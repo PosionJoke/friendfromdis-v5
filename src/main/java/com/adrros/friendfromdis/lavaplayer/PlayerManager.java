@@ -1,7 +1,8 @@
 package com.adrros.friendfromdis.lavaplayer;
 
+import com.adrros.friendfromdis.command.music.play.buttonlisteners.PlayCommandUtils;
 import com.adrros.friendfromdis.command.music.play.SavedSong;
-import com.adrros.friendfromdis.command.music.play.PlayDropDown;
+import com.adrros.friendfromdis.command.music.play.buttonlisteners.PlayDropDown;
 import com.adrros.friendfromdis.command.music.play.SongsToPlayStore;
 import com.adrros.friendfromdis.domain.AddSoundService;
 import com.adrros.friendfromdis.domain.Sound;
@@ -27,8 +28,12 @@ import java.util.function.BiConsumer;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static com.adrros.friendfromdis.Commands.PLAY;
 
 public class PlayerManager {
 //    public static final String PATH_TO_LOCAL_MP3 = "../";
@@ -126,7 +131,7 @@ public class PlayerManager {
                     List<AudioTrack> tracks = playlist.getTracks();
                     AudioTrack first = tracks.stream().filter((audioTrack) -> audioTrack.getInfo().title.equals(songName)).findFirst().orElseThrow();
                     
-                    channel.sendMessage("Adding to queue: `" + first.getInfo().title).queue();
+                    showInfoBoxOnChannel(first, channel, first.getInfo().title);
                     musicManager.scheduler.addToQueue(first);
                 };
 
@@ -142,6 +147,16 @@ public class PlayerManager {
                 System.out.println("loadFailed ERROR (find me)");
             }
         });
+    }
+    
+    private static void showInfoBoxOnChannel(AudioTrack first, TextChannel channel, String songName) {
+        final MessageCreateData messageCreateData = MessageCreateData.fromContent(PLAY.name());
+        final MessageCreateData build = MessageCreateBuilder.from(messageCreateData)
+                .addActionRow(PlayCommandUtils.playItemButtons())
+                .addEmbeds(PlayCommandUtils.getPlaySongEmbed(songName))
+                .build();
+        
+        channel.sendMessage(build).queue();
     }
     
     private static void createLocalFile(Sound sound) {

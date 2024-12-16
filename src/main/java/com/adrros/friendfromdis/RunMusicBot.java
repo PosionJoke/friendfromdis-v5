@@ -3,7 +3,8 @@ package com.adrros.friendfromdis;
 import com.adrros.friendfromdis.command.music.add.AddMusicCommand;
 import com.adrros.friendfromdis.command.music.loop.Loop;
 import com.adrros.friendfromdis.command.music.play.PlayCommand;
-import com.adrros.friendfromdis.command.music.play.PlayDropDownListener;
+import com.adrros.friendfromdis.command.music.play.buttonlisteners.PlayBoxListener;
+import com.adrros.friendfromdis.command.music.play.buttonlisteners.PlayDropDownListener;
 import com.adrros.friendfromdis.command.music.skip.Skip;
 import com.adrros.friendfromdis.domain.AddSoundService;
 import jakarta.annotation.PostConstruct;
@@ -45,6 +46,7 @@ public class RunMusicBot {
 		List<ListenerAdapter> listeners = List.of(
 				new PlayCommand(addSoundService),
 				new PlayDropDownListener(),
+				new PlayBoxListener(),
 				new Loop(),
 				new Skip(),
 				new AddMusicCommand(addSoundService)

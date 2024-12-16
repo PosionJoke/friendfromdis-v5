@@ -1,4 +1,4 @@
-package com.adrros.friendfromdis.command.music.play;
+package com.adrros.friendfromdis.command.music.play.buttonlisteners;
 
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
