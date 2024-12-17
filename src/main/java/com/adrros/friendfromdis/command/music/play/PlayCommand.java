@@ -44,7 +44,7 @@ public class PlayCommand extends ListenerAdapter {
 		songNamesFromDB.stream()
 				.map(s -> SavedSong.SAVED_SONG.getName() + s)
 				.forEach(additionalSongNames::add);
-		this.runPlayCommand(eventRaw.getMessage().getContentRaw(), eventRaw.getMember(), eventRaw.getChannel(), eventRaw.getAuthor().getAvatarUrl(), true, additionalSongNames, addSoundService);
+		this.runPlayCommand(eventRaw.getMessage().getContentRaw(), eventRaw.getChannel(), additionalSongNames, addSoundService);
 	}
 	
 	private static void joinToChannelIfNeeded(MessageReceivedEvent eventRaw, MessageChannelUnion channel) {
