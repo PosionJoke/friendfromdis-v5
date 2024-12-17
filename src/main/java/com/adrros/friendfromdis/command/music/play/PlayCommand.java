@@ -1,14 +1,8 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package com.adrros.friendfromdis.command.music.play;
 
 
 import com.adrros.friendfromdis.Commands;
 import com.adrros.friendfromdis.domain.AddSoundService;
-import com.adrros.friendfromdis.domain.Sound;
 import com.adrros.friendfromdis.lavaplayer.PlayerManager;
 import com.adrros.friendfromdis.lavaplayer.player_state.PlayerState;
 import com.adrros.friendfromdis.util.BotState;
@@ -45,42 +39,31 @@ public class PlayCommand extends ListenerAdapter {
 		joinToChannelIfNeeded(eventRaw, channel);
 		
 		List<String> additionalSongNames = new ArrayList<>();
-		// get titles
-		// paste titles to dropdown
-		String songName = getLinkOrSongName(eventRaw.getMessage().getContentRaw());
-		// find similar names from DB and append them to list
-//		List<String> songNamesFromDB = new ArrayList<>();
-//		List<String> songNamesFromDB = List.of(SavedSong.SAVED_SONG.getName() + "aaa1.mp3");
 		final String pureSongName = getPureSongName(eventRaw.getMessage().getContentRaw());
 		List<String> songNamesFromDB = addSoundService.getSimilarSongNames(pureSongName);
 		songNamesFromDB.stream()
 				.map(s -> SavedSong.SAVED_SONG.getName() + s)
 				.forEach(additionalSongNames::add);
-//		additionalSongNames.addAll(songNamesFromDB);
 		this.runPlayCommand(eventRaw.getMessage().getContentRaw(), eventRaw.getMember(), eventRaw.getChannel(), eventRaw.getAuthor().getAvatarUrl(), true, additionalSongNames, addSoundService);
 	}
 	
 	private static void joinToChannelIfNeeded(MessageReceivedEvent eventRaw, MessageChannelUnion channel) {
 		Member self = ((Member) Objects.requireNonNull(eventRaw.getMember())).getGuild().getSelfMember();
 		GuildVoiceState selfVoiceState = self.getVoiceState();
-		if (selfVoiceState.inAudioChannel()) {
-			channel.sendMessage("I'm already in a voice channel").queue();
-		} else {
-			Member member = eventRaw.getMember();
-			GuildVoiceState memberVoiceState = member.getVoiceState();
-			AudioManager audioManager = eventRaw.getGuild().getAudioManager();
-			AudioChannelUnion memberChannel = ((GuildVoiceState) Objects.requireNonNull(memberVoiceState)).getChannel();
-			PlayerState.setTextChannel(channel.asTextChannel());
-			BotState.setSelf(selfVoiceState);
-			BotState.setAudioManager(audioManager);
-			BotState.setTextChannel(channel.asTextChannel());
-			BotState.setVoiceChannel(((AudioChannelUnion) Objects.requireNonNull(memberChannel)).asVoiceChannel());
-			audioManager.openAudioConnection(memberChannel);
-		}
+		Member member = eventRaw.getMember();
+		GuildVoiceState memberVoiceState = member.getVoiceState();
+		AudioManager audioManager = eventRaw.getGuild().getAudioManager();
+		AudioChannelUnion memberChannel = ((GuildVoiceState) Objects.requireNonNull(memberVoiceState)).getChannel();
+		PlayerState.setTextChannel(channel.asTextChannel());
+		BotState.setSelf(selfVoiceState);
+		BotState.setAudioManager(audioManager);
+		BotState.setTextChannel(channel.asTextChannel());
+		BotState.setVoiceChannel(((AudioChannelUnion) Objects.requireNonNull(memberChannel)).asVoiceChannel());
+		audioManager.openAudioConnection(memberChannel);
 		
 	}
 	
-	private void runPlayCommand(String contentRaw, Member member, MessageChannelUnion channel, String avatarUrl, boolean b, List<String> additionalSongNames, AddSoundService addSoundService) {
+	private void runPlayCommand(String contentRaw, MessageChannelUnion channel, List<String> additionalSongNames, AddSoundService addSoundService) {
 		PlayerState.setTextChannel(channel.asTextChannel());
 		PlayerManager.loadAndPlay(channel.asTextChannel(), getLinkOrSongName(contentRaw), additionalSongNames, addSoundService, false);
 	}
@@ -98,8 +81,6 @@ public class PlayCommand extends ListenerAdapter {
 			// * comment line below, now it should find mp3
 			link = SOUND_CLAUD.source + link;
 		}
-//		link.replaceAll(" ", "");
-//		return link.replaceAll(" ", "");
 		return link.trim();
 	}
 	
@@ -115,7 +96,7 @@ public class PlayCommand extends ListenerAdapter {
 			allWordsToFind.append(" ").append(word);
 		}
 		
-		String link = allWordsToFind.toString().replace("=", "").replace(Commands.PLAY.PREFIX, "");
+		String link = allWordsToFind.toString().replace("=", "").replace(Commands.PLAY.prefix, "");
 //		if (!isUrl(link)) {
 //			// * comment line below, now it should find mp3
 //			link = SOUND_CLAUD.source + link;

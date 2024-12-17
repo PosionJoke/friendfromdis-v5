@@ -4,11 +4,12 @@ public enum Commands {
 	PLAY("play"),
 	LOOP("loop"),
 	SKIP("skip"),
+	QUEUE("queue"),
 	ADD_MUSIC("add");
 
-	public final String PREFIX;
+	public final String prefix;
 	
 	Commands(String prefix) {
-		PREFIX = prefix;
+		this.prefix = prefix;
 	}
 }

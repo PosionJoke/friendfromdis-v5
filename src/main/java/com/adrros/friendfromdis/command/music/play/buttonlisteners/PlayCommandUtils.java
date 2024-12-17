@@ -9,13 +9,15 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import java.util.List;
 
 import static com.adrros.friendfromdis.Commands.LOOP;
+import static com.adrros.friendfromdis.Commands.QUEUE;
 import static com.adrros.friendfromdis.Commands.SKIP;
 
 public class PlayCommandUtils {
 	public static List<ItemComponent> playItemButtons() {
 		return List.of(
 				Button.primary(LOOP.name(), "Loop ON/OFF"),
-				Button.danger(SKIP.name(), "Skip")
+				Button.danger(SKIP.name(), "Skip"),
+				Button.success(QUEUE.name(), "Queue")
 		);
 	}
 	
@@ -24,7 +26,7 @@ public class PlayCommandUtils {
 				.title("🐋🪽")
 				.description("""
                                      **New song:** %s
-                                     ➰ loop: **%s**
+                                     🎺 loop: **%s**
                                      """.formatted(songName, PlayerState.isLoopOn()))
 				.build();
 	}

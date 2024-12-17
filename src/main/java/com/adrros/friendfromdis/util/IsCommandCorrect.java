@@ -8,7 +8,7 @@ public class IsCommandCorrect {
 	
 	public static boolean isCommandCorrect(String wholeRawMessage, Commands commands) {
 		String withoutPrefix = deletePrefix(wholeRawMessage);
-		return withoutPrefix.startsWith(commands.PREFIX);
+		return withoutPrefix.startsWith(commands.prefix);
 	}
 	
 	private static String deletePrefix(String wholeRawMessage) {

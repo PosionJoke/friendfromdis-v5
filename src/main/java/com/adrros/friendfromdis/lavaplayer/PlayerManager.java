@@ -124,6 +124,7 @@ public class PlayerManager {
                         final Sound byName = addSoundService.getByName(fileName);
                         createLocalFile(byName);
                         doLoadAndPlay(channel, PATH_TO_LOCAL_MP3 + fileName, silent, getMusicManager(channel.getGuild()), additionalSongNames, addSoundService);
+                        showInfoBoxOnChannel(channel, fileName);
                         return;
                     }
                     PlayerManager.log.info("Adding to queue");
@@ -131,7 +132,7 @@ public class PlayerManager {
                     List<AudioTrack> tracks = playlist.getTracks();
                     AudioTrack first = tracks.stream().filter((audioTrack) -> audioTrack.getInfo().title.equals(songName)).findFirst().orElseThrow();
                     
-                    showInfoBoxOnChannel(first, channel, first.getInfo().title);
+                    showInfoBoxOnChannel(channel, first.getInfo().title);
                     musicManager.scheduler.addToQueue(first);
                 };
 
@@ -149,7 +150,7 @@ public class PlayerManager {
         });
     }
     
-    private static void showInfoBoxOnChannel(AudioTrack first, TextChannel channel, String songName) {
+    private static void showInfoBoxOnChannel(TextChannel channel, String songName) {
         final MessageCreateData messageCreateData = MessageCreateData.fromContent(PLAY.name());
         final MessageCreateData build = MessageCreateBuilder.from(messageCreateData)
                 .addActionRow(PlayCommandUtils.playItemButtons())

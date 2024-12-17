@@ -26,20 +26,6 @@ public class CustomEmbedBuilder {
 		return customEmbedBuilder;
 	}
 	
-	public CustomEmbedBuilder color(Color color) {
-		embedBuilder.setColor(color);
-		return customEmbedBuilder;
-	}
-	
-	public CustomEmbedBuilder footer(String text, String avatarURL) {
-		embedBuilder.setFooter(text, avatarURL);
-		return customEmbedBuilder;
-	}
-	
-	public void clear() {
-		embedBuilder.clear();
-	}
-	
 	public MessageEmbed build() {
 		return embedBuilder.build();
 	}
