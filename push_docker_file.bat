@@ -14,10 +14,3 @@ docker tag friend_from_dis_img_v1.1.%VERSION_NUMBER% posionjoke/friend_from_dis_
 
 REM Push the Docker image to the registry
 docker push posionjoke/friend_from_dis_img:1.1.%VERSION_NUMBER%
-
-
-CREATE TABLE cars (
-  soundName VARCHAR(255),
-  soundData VARCHAR(255),
-  addedBy INT
-);
