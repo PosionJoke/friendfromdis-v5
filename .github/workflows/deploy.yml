@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  # GHCR wymaga małych liter w nazwie obrazu
+  IMAGE_NAME: ghcr.io/npexe/friendfromdis
 
 jobs:
   build:
