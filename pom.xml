@@ -36,6 +36,7 @@
 		</dependency>
 <!--		required for javax lob -->
 		
+		
 		<dependency>
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
