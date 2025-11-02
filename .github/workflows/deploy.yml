@@ -7,7 +7,7 @@ on:
 
 env:
   # GHCR wymaga małych liter w nazwie obrazu
-  IMAGE_NAME: ghcr.io/npexe/friendfromdis-v2
+  IMAGE_NAME: ghcr.io/posionjoke/friendfromdis-v5
 
 jobs:
   build:
