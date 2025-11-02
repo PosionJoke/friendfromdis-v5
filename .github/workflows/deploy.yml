@@ -7,7 +7,6 @@ on:
 
 env:
   IMAGE_NAME: ghcr.io/npexe/friendfromdis
-  IMAGE_TAG: latest
 
 jobs:
   build:
@@ -26,14 +25,28 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Build jar
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      - name: Build JAR
         run: ./mvnw -B -DskipTests package
 
       - name: Log in to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
-      - name: Build image
-        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
+      - name: Build Docker image
+        run: |
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SHORT_SHA .
 
-      - name: Push image
-        run: docker push $IMAGE_NAME:$IMAGE_TAG
+      - name: Push Docker image
+        run: |
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          docker push $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:$SHORT_SHA
+
+      - name: Print info
+        run: |
+          echo "✅ Successfully pushed images:"
+          echo " - $IMAGE_NAME:latest"
+          echo " - $IMAGE_NAME:$(echo $GITHUB_SHA | cut -c1-7)"
