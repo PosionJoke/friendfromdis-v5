@@ -39,6 +39,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+
+
       - name: Build Docker image
         run: |
           SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
