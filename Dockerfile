@@ -15,3 +15,4 @@ COPY --from=build /app/target/*-SNAPSHOT.jar /app/app.jar
 ENV SERVER_PORT=9997
 EXPOSE 9997
 ENTRYPOINT ["java","-jar","/app/app.jar"]
+
