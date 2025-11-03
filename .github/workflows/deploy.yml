@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  # Używaj małych liter — GHCR tego wymaga
+  # Używaj małych liter — GHCR tegoss wymaga
   IMAGE_NAME: ghcr.io/posionjoke/friendfromdis-v5
 
 jobs:
